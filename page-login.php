@@ -1,3 +1,84 @@
+<?php
+
+$error_div = "";
+$G_Email = "";
+
+//GET
+if($_GET["page"] == 1)
+{
+    $G_Email = $_GET["email"];
+}
+else if($_GET["page"] == "2-1")
+{
+    $error_div = '';
+}
+else if($_GET["page"] == "2-2")
+{
+    $error_div = '<div class="alert alert-danger alert-dismissible" role="alert"><i class="fa fa-times-circle"></i> Your account is not confirmed. Please see your mail.</div>';
+}
+else if($_GET["page"] == "3")
+{   
+    session_start();
+    // remove all session variables
+    session_unset();
+    // destroy the session
+    session_destroy();
+    $error_div = '<div class="alert alert-danger alert-dismissible" role="alert"><i class="fa fa-times-circle"></i> Your account is not confirmed. Please see your mail.</div>';
+}
+else{
+    $G_Email = "user@domain.com";
+}
+
+session_start();
+//When login button is pressed
+if(isset($_POST["Login_Button"]))
+{
+    //import
+    include_once("db.php");
+
+    //variables
+    $V_Email = $_POST["signin-email"];
+    $V_Password = $_POST["signin-password"];
+    $V_Password = md5($V_Password);
+
+    //SQL Query
+    $sql = "SELECT * FROM users_user WHERE User_Email = '$V_Email' AND User_Password = '$V_Password'";
+    $result = $conn->query($sql);
+
+    //RUN SQL Query
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $_SESSION['S_User_UserID'] = $row['User_UserID'];
+            $_SESSION['S_User_FirstName'] = $row['User_FirstName'];
+            $_SESSION['S_User_LastName'] = $row['User_LastName'];
+            $_SESSION['S_User_Name'] = $row['User_FirstName'] . " " . $row['User_LastName'];
+            $_SESSION['S_User_Email'] = $row['User_Email'];
+            $_SESSION['S_User_Hash'] = $row['User_Hash'];
+            $_SESSION['S_User_Profile_Picture'] = $row['User_Profile_Picture'];
+            $_SESSION['S_User_Active'] = $row['User_Active'];
+            $V_User_Active = $row['User_Active'];
+            echo '<script language="javascript">';
+            echo 'alert("'.$V_User_Active.'")';
+            echo '</script>';
+            if($V_User_Active == 1){
+                $_SESSION['S_Session_Active'] = "True";
+                header("location: index.php");
+            }
+            else{
+                $_SESSION['S_Session_Active'] = "False";
+                $error_div = '<div class="alert alert-danger alert-dismissible" role="alert"><i class="fa fa-times-circle"></i> Your account is not confirmed. Please see your mail.</div>';
+            }
+        }
+    } 
+    else {
+        $error_div = '<div class="alert alert-danger alert-dismissible" role="alert">
+                            <i class="fa fa-times-circle"></i> Your email and password does not match.
+                    </div>';
+    }
+    $conn->close();
+}
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -32,15 +113,16 @@
                         <div class="header">
                             <p class="lead">Login to your account</p>
                         </div>
+                        <?= $error_div; ?>
                         <div class="body">
-                            <form class="form-auth-small" action="index.php">
+                            <form class="form-auth-small" action="page-login.php" method="POST">
                                 <div class="form-group">
                                     <label for="signin-email" class="control-label sr-only">Email</label>
-                                    <input type="email" class="form-control" id="signin-email" value="user@domain.com" placeholder="Email">
+                                    <input type="email" class="form-control" id="signin-email" name="signin-email" value="<?= $G_Email;?>" placeholder="Email">
                                 </div>
                                 <div class="form-group">
                                     <label for="signin-password" class="control-label sr-only">Password</label>
-                                    <input type="password" class="form-control" id="signin-password" value="thisisthepassword" placeholder="Password">
+                                    <input type="password" class="form-control" id="signin-password" name="signin-password" value="" placeholder="Password">
                                 </div>
                                 <div class="form-group clearfix">
                                     <label class="fancy-checkbox element-left">
@@ -48,7 +130,7 @@
                                         <span>Remember me</span>
                                     </label>								
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-lg btn-block">LOGIN</button>
+                                <button type="submit" name="Login_Button" class="btn btn-primary btn-lg btn-block">LOGIN</button>
                                 <div class="bottom">
                                     <span class="helper-text m-b-10"><i class="fa fa-lock"></i> <a href="page-forgot-password.php">Forgot password?</a></span>
                                     <span>Don't have an account? <a href="page-register.php">Register</a></span>

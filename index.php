@@ -1,8 +1,22 @@
+<?php
+
+session_start();
+
+if ($_SESSION['S_Session_Active'] == "False") {
+    header('location: page-login.php?page=2-1');
+}
+else if ($_SESSION['S_User_Active'] == 0) {
+    header('location: page-login.php?page=2-2');
+}
+else{
+
+}
+?>
 <!doctype html>
 <html lang="en">
 
 <head>
-<title>:: Lucid HR :: Home</title>
+<title>Home</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -46,11 +60,6 @@
             </div>
             
             <div class="navbar-right">
-                <form id="navbar-search" class="navbar-form search-form">
-                    <input value="" class="form-control" placeholder="Search here..." type="text">
-                    <button type="button" class="btn btn-default"><i class="icon-magnifier"></i></button>
-                </form>               
-
                 <div id="navbar-menu">
                     <ul class="nav navbar-nav">                        
                         <li><a href="app-events.php" class="icon-menu d-none d-sm-block d-md-none d-lg-block"><i class="icon-calendar"></i></a></li>
@@ -132,7 +141,7 @@
                                 <li><a href="javascript:void(0);"><i class="icon-refresh"></i> <span>Renewals</span></a></li>
                             </ul>
                         </li>
-                        <li><a href="page-login.php" class="icon-menu"><i class="icon-login"></i></a></li>
+                        <li><a href="page-login.php?page=3" class="icon-menu"><i class="icon-login"></i></a></li>
                     </ul>
                 </div>
             </div>
@@ -142,32 +151,17 @@
     <div id="left-sidebar" class="sidebar">
         <div class="sidebar-scroll">
             <div class="user-account">
-                <img src="assets/images/user.png" class="rounded-circle user-photo" alt="User Profile Picture">
+                <img src="<?= $_SESSION['S_User_Profile_Picture'];?>" class="rounded-circle user-photo" alt="User Profile Picture">
                 <div class="dropdown">
                     <span>Welcome,</span>
-                    <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>Jessica Doe</strong></a>                    
+                    <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong><?= $_SESSION['S_User_Name']; ?></strong></a>                    
                     <ul class="dropdown-menu dropdown-menu-right account animated flipInY">
                         <li><a href="page-profile2.php"><i class="icon-user"></i>My Profile</a></li>
                         <li><a href="app-inbox.php"><i class="icon-envelope-open"></i>Messages</a></li>
                         <li><a href="javascript:void(0);"><i class="icon-settings"></i>Settings</a></li>
                         <li class="divider"></li>
-                        <li><a href="page-login.php"><i class="icon-power"></i>Logout</a></li>
+                        <li><a href="page-login.php?page=3"><i class="icon-power"></i>Logout</a></li>
                     </ul>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-4">
-                        <h6>5+</h6>
-                        <small>Experience</small>                        
-                    </div>
-                    <div class="col-4">
-                        <h6>400+</h6>
-                        <small>Employees</small>                        
-                    </div>
-                    <div class="col-4">                        
-                        <h6>80+</h6>
-                        <small>Clients</small>
-                    </div>
                 </div>
             </div>
             <!-- Nav tabs -->
@@ -471,29 +465,6 @@
                             <li class="breadcrumb-item active">Dashboard</li>
                         </ul>
                     </div>            
-                    <div class="col-lg-6 col-md-4 col-sm-12 text-right">
-                        <div class="bh_chart hidden-xs">
-                            <div class="float-left m-r-15">
-                                <small>Visitors</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-user"></i> 1,784</h6>
-                            </div>
-                            <span class="bh_visitors float-right">2,5,1,8,3,6,7,5</span>
-                        </div>
-                        <div class="bh_chart hidden-sm">
-                            <div class="float-left m-r-15">
-                                <small>Visits</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-globe"></i> 325</h6>
-                            </div>
-                            <span class="bh_visits float-right">10,8,9,3,5,8,5</span>
-                        </div>
-                        <div class="bh_chart hidden-sm">
-                            <div class="float-left m-r-15">
-                                <small>Chats</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-bubbles"></i> 13</h6>
-                            </div>
-                            <span class="bh_chats float-right">1,8,5,6,2,4,3,2</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
