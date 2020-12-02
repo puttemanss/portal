@@ -489,7 +489,7 @@ employee_edit_permission();
                                         $sql = "SELECT * FROM `users_user`
                                         INNER JOIN `users_roles_list` ON users_user.User_RoleID = users_roles_list.Roles_ListID
                                         INNER JOIN `users_gender`ON users_user.User_Gender = users_gender.Gender_GenderID
-                                        INNER JOIN `user_marital_status` ON users_user.User_Marital_Status = user_marital_status.Marital_StatusID 
+                                        INNER JOIN `users_marital_status` ON users_user.User_Marital_Status = users_marital_status.Marital_StatusID 
                                         WHERE `User_Active` = '1'";
 
                                         $result = $conn->query($sql);
@@ -795,7 +795,7 @@ employee_edit_permission();
                                 <select name="IM-Marital-Status" id="IM-Marital-Status" class="form-control" disabled>
                                     <?php
                                         include("db.php");
-                                        $sql = "SELECT * FROM `user_marital_status`";
+                                        $sql = "SELECT * FROM `users_marital_status`";
                                         $result = $conn->query($sql);
                                         
                                         if ($result->num_rows > 0) {
@@ -1015,7 +1015,7 @@ employee_edit_permission();
                                 <select name="EM-Marital-Status" id="EM-Marital-Status" class="form-control">
                                     <?php
                                         include("db.php");
-                                        $sql = "SELECT * FROM `user_marital_status`";
+                                        $sql = "SELECT * FROM `users_marital_status`";
                                         $result = $conn->query($sql);
                                         
                                         if ($result->num_rows > 0) {
