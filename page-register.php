@@ -41,6 +41,7 @@ if(isset($_POST["Register_Button"]))
                                 <i class="fa fa-times-circle"></i> There was a problem. Maybe your email is allready in use.
                         </div>';
         }
+        
     }
     
     $conn->close();

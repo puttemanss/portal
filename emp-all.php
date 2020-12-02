@@ -1,8 +1,99 @@
+<?php
+include('account-check.php');
+employee_edit_permission();
+
+    $error_div = "";
+    if(isset($_POST["Button_Add"]))
+    {
+        include('db.php');
+        $V_Firstname = $_POST["Signup-FirstName"];
+        $V_Lastname = $_POST["Signup-LastName"];
+        $V_Email = $_POST["Signup-Email"];
+        $V_password = $_POST['Signup-Password'];
+        $V_Role = $_POST['Signup-Role'];
+        $V_Password = md5($V_Password);
+        $V_hash = password_hash($V_Password, PASSWORD_DEFAULT);
+        $path = 'assets/images/lg/avatar4.jpg';
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $data = file_get_contents($path);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        // SQL Query
+        $sql = "INSERT INTO `users_user`(`User_FirstName`, `User_LastName`, `User_Email`, `User_Password`, `User_Hash`, `User_Active`, `User_Profile_Picture`, `User_RoleID`) VALUES ('$V_Firstname','$V_Lastname','$V_Email','$V_Password','$V_hash','1', '$base64', '$V_Role')";
+
+        //Run SQL Query
+        if ($conn->query($sql) === TRUE) {
+            $V_Url = "emp-all.php";
+            header("location: $V_Url");
+        } else {
+            $error_div = '<div class="alert alert-danger alert-dismissible" role="alert">
+                                <i class="fa fa-times-circle"></i> There was a problem. Maybe your email is allready in use.
+                        </div>';
+        }
+        $conn->close();
+    }
+    if(isset($_POST["Button_Edit"]))
+    {
+        $V_Date = date("Y-m-d");
+        $V_EM_ID = $_POST['EM-ID'];
+        $V_EM_HASH = $_POST['EM-HASH'];
+        $V_EM_FirstName = $_POST['EM-FirstName'];
+        $V_EM_LastName = $_POST['EM-LastName'];
+        $V_EM_Email = $_POST['EM-Email'];
+        $V_EM_Role = $_POST['EM-Role'];
+        $V_EM_Phone = $_POST['EM-Phone'];
+        $V_EM_Gender = $_POST['EM-Gender'];
+        $V_EM_BirthDate = $_POST['EM-Birthdate'];
+        $V_EM_BirthDate = date("Y-m-d", strtotime($V_EM_BirthDate));
+        $V_EM_Address_Line_1 = $_POST['EM-Address-Line-1'];
+        $V_EM_Address_Line_2 = $_POST['EM-Address-Line-2'];
+        $V_EM_Zipcode = $_POST['EM-Zipcode'];
+        $V_EM_City = $_POST['EM-City'];
+        $V_EM_Country = $_POST['EM-Country'];
+        $V_EM_National_Insurance = $_POST['EM-National-Insurance'];
+        $V_EM_Account_Number = $_POST['EM-Account-Number'];
+        $V_EM_Enterprise_Email = $_POST['EM-Enterprise-Email'];
+        $V_EM_Contact_Person_Name = $_POST['EM-Contact-Name'];
+        $V_EM_Contact_Person_Phone = $_POST['EM-Contact-Phone'];
+        $V_EM_Marital_Status = $_POST['EM-Marital-Status'];
+        include('db.php');
+        $sql = "UPDATE `users_user` SET `User_Date_Edit`='$V_Date',`User_FirstName`='$V_EM_FirstName',`User_LastName`='$V_EM_LastName',
+        `User_Email`='$V_EM_Email',`User_RoleID`='$V_EM_Role', `User_Phone`='$V_EM_Phone',`User_Gender`='$V_EM_Gender',
+        `User_BirthDate`='$V_EM_BirthDate',`User_Address_Line_1`='$V_EM_Address_Line_1',`User_Address_Line_2`='$V_EM_Address_Line_2',`User_Zipcode`='$V_EM_Zipcode',
+        `User_City`='$V_EM_City',`User_Country`='$V_EM_Country',`User_Marital_Status`='$V_EM_Marital_Status',`User_National_Insurance_Number`='$V_EM_National_Insurance',
+        `User_Account_Number`='$V_EM_Account_Number',`User_Enterprise_Email`='$V_EM_Enterprise_Email',`User_Contact_Person_Name`='$V_EM_Contact_Person_Name',
+        `User_Contact_Person_Phone`='$V_EM_Contact_Person_Phone' WHERE `User_UserID` = '$V_EM_ID' AND `User_Hash` = '$V_EM_HASH' ";
+
+        if ($conn->query($sql) === TRUE) {
+        
+        } else {
+        echo "Error updating record: " . $conn->error;
+        }
+
+        $conn->close();
+    }
+    if(isset($_POST["Button_Delete"]))
+    {
+        $V_Date = date("Y-m-d");
+        $V_DM_ID = $_POST['DM-ID'];
+        $V_DM_HASH = $_POST['DM-HASH'];
+        
+        include('db.php');
+        $sql = "UPDATE `users_user` SET `User_Date_Edit`='$V_Date',`User_Active`= '3' WHERE `User_UserID` = '$V_DM_ID' AND `User_Hash` = '$V_DM_HASH' ";
+        if ($conn->query($sql) === TRUE) {
+        
+        } else {
+        echo "Error updating record: " . $conn->error;
+        }
+
+        $conn->close();
+    }
+?>
 <!doctype html>
 <html lang="en">
 
 <head>
-<title>:: Lucid HR :: Employee List</title>
+<title>Employee List</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -32,126 +123,14 @@
 <!-- Overlay For Sidebars -->
 
 <div id="wrapper">
-
-    <nav class="navbar navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-btn">
-                <button type="button" class="btn-toggle-offcanvas"><i class="lnr lnr-menu fa fa-bars"></i></button>
-            </div>
-
-            <div class="navbar-brand">
-                <a href="index.php"><img src="assets/images/logo.svg" alt="Lucid Logo" class="img-responsive logo"></a>                
-            </div>
-            
-            <div class="navbar-right">
-                <form id="navbar-search" class="navbar-form search-form">
-                    <input value="" class="form-control" placeholder="Search here..." type="text">
-                    <button type="button" class="btn btn-default"><i class="icon-magnifier"></i></button>
-                </form>                
-
-                <div id="navbar-menu">
-                    <ul class="nav navbar-nav">
-                        <li>
-                            <a href="app-events.php" class="icon-menu d-none d-sm-block d-md-none d-lg-block"><i class="icon-calendar"></i></a>
-                        </li>
-                        <li>
-                            <a href="app-chat.php" class="icon-menu d-none d-sm-block"><i class="icon-bubbles"></i></a>
-                        </li>
-                        <li>
-                            <a href="app-inbox.php" class="icon-menu d-none d-sm-block"><i class="icon-envelope"></i><span class="notification-dot"></span></a>
-                        </li>
-                        <li class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle icon-menu" data-toggle="dropdown">
-                                <i class="icon-bell"></i>
-                                <span class="notification-dot"></span>
-                            </a>
-                            <ul class="dropdown-menu notifications animated shake">
-                                <li class="header"><strong>You have 4 new Notifications</strong></li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-info text-warning"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Campaign <strong>Holiday Sale</strong> is nearly reach budget limit.</p>
-                                                <span class="timestamp">10:00 AM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>                               
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-like text-success"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Your New Campaign <strong>Holiday Sale</strong> is approved.</p>
-                                                <span class="timestamp">11:30 AM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                    <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-pie-chart text-info"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Website visits from Twitter is 27% higher than last week.</p>
-                                                <span class="timestamp">04:00 PM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-info text-danger"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Error on website analytics configurations</p>
-                                                <span class="timestamp">Yesterday</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="footer"><a href="javascript:void(0);" class="more">See all notifications</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle icon-menu" data-toggle="dropdown"><i class="icon-equalizer"></i></a>
-                            <ul class="dropdown-menu user-menu menu-icon animated bounceIn">
-                                <li class="menu-heading">ACCOUNT SETTINGS</li>
-                                <li><a href="javascript:void(0);"><i class="icon-note"></i> <span>Basic</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-equalizer"></i> <span>Preferences</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-lock"></i> <span>Privacy</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-bell"></i> <span>Notifications</span></a></li>
-                                <li class="menu-heading">BILLING</li>
-                                <li><a href="javascript:void(0);"><i class="icon-credit-card"></i> <span>Payments</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-printer"></i> <span>Invoices</span></a></li>                                
-                                <li><a href="javascript:void(0);"><i class="icon-refresh"></i> <span>Renewals</span></a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="page-login.php" class="icon-menu"><i class="icon-login"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-            
+    <?php include_once('navigation.php') ;?>      
     <div id="left-sidebar" class="sidebar">
         <div class="sidebar-scroll">
             <div class="user-account">
-                <img src="assets/images/user.png" class="rounded-circle user-photo" alt="User Profile Picture">
+                <img src="<?= $_SESSION['S_User_Profile_Picture'];?>" class="rounded-circle user-photo" alt="User Profile Picture">
                 <div class="dropdown">
                     <span>Welcome,</span>
-                    <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>Jessica Doe</strong></a>
+                    <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong><?= $_SESSION['S_User_Name']; ?></strong></a>
                     <ul class="dropdown-menu dropdown-menu-right account animated flipInY">
                         <li><a href="page-profile2.php"><i class="icon-user"></i>My Profile</a></li>
                         <li><a href="app-inbox.php"><i class="icon-envelope-open"></i>Messages</a></li>
@@ -159,21 +138,6 @@
                         <li class="divider"></li>
                         <li><a href="page-login.php"><i class="icon-power"></i>Logout</a></li>
                     </ul>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-4">
-                        <h6>5+</h6>
-                        <small>Experience</small>                        
-                    </div>
-                    <div class="col-4">
-                        <h6>400+</h6>
-                        <small>Employees</small>                        
-                    </div>
-                    <div class="col-4">                        
-                        <h6>80+</h6>
-                        <small>Clients</small>
-                    </div>
                 </div>
             </div>
             <!-- Nav tabs -->
@@ -192,17 +156,22 @@
                             <li><a href="index.php"><i class="icon-speedometer"></i><span>HR Dashboard</span></a></li>
                             <li><a href="app-holidays.php"><i class="icon-list"></i>Holidays</a></li>
                             <li><a href="app-events.php"><i class="icon-calendar"></i>Events</a></li>
-                            <li><a href="app-activities.php"><i class="icon-badge"></i>Activities</a></li>
-                            <li><a href="app-social.php"><i class="icon-globe"></i>HR Social</a></li>
                             <li class="active">
                                 <a href="#Employees" class="has-arrow"><i class="icon-users"></i><span>Employees</span></a>
                                 <ul>
-                                    <li class="active"><a href="emp-all.php">All Employees</a></li>
+                                <?php 
+                                    if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                                    echo '<li class="active"><a href="emp-all.php">All Employees</a></li>'; 
+                                    } ?>
                                     <li><a href="emp-leave.php">Leave Requests</a></li>
-                                    <li><a href="emp-attendance.php">Attendance</a></li>
-                                    <li><a href="emp-departments.php">Departments</a></li>
+                                <?php if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                                    echo '<li><a href="emp-attendance.php">Attendance</a></li>'; 
+                                    } ?>
                                 </ul>
                             </li>
+                            <?php 
+                            if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                            echo '    
                             <li>
                                 <a href="#Accounts" class="has-arrow"><i class="icon-briefcase"></i><span>Accounts</span></a>
                                 <ul>
@@ -224,21 +193,8 @@
                                     <li><a href="report-expense.php">Expense Report</a></li>
                                     <li><a href="report-invoice.php">Invoice Report</a></li>                                    
                                 </ul>
-                            </li>
-                            <li><a href="app-users.php"><i class="icon-user"></i>Users</a></li>
-                            <li>
-                                <a href="#Authentication" class="has-arrow"><i class="icon-lock"></i><span>Authentication</span></a>
-                                <ul>
-                                    <li><a href="page-login.php">Login</a></li>
-                                    <li><a href="page-register.php">Register</a></li>
-                                    <li><a href="page-lockscreen.php">Lockscreen</a></li>
-                                    <li><a href="page-forgot-password.php">Forgot Password</a></li>
-                                    <li><a href="page-404.php">Page 404</a></li>
-                                    <li><a href="page-403.php">Page 403</a></li>
-                                    <li><a href="page-500.php">Page 500</a></li>
-                                    <li><a href="page-503.php">Page 503</a></li>
-                                </ul>
-                            </li>
+                            </li>';
+                            }?>
                         </ul>
                     </nav>
                 </div>
@@ -478,29 +434,6 @@
                             <li class="breadcrumb-item active">Employee List</li>
                         </ul>
                     </div>            
-                    <div class="col-lg-6 col-md-4 col-sm-12 text-right">
-                        <div class="bh_chart hidden-xs">
-                            <div class="float-left m-r-15">
-                                <small>Visitors</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-user"></i> 1,784</h6>
-                            </div>
-                            <span class="bh_visitors float-right">2,5,1,8,3,6,7,5</span>
-                        </div>
-                        <div class="bh_chart hidden-sm">
-                            <div class="float-left m-r-15">
-                                <small>Visits</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-globe"></i> 325</h6>
-                            </div>
-                            <span class="bh_visits float-right">10,8,9,3,5,8,5</span>
-                        </div>
-                        <div class="bh_chart hidden-sm">
-                            <div class="float-left m-r-15">
-                                <small>Chats</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-bubbles"></i> 13</h6>
-                            </div>
-                            <span class="bh_chats float-right">1,8,5,6,2,4,3,2</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -519,272 +452,98 @@
                                     <thead class="thead-dark">
                                         <tr>
                                             <th>
-                                                <label class="fancy-checkbox">
-                                                    <input class="select-all" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
                                             </th>
                                             <th>Name</th>
-                                            <th>Employee ID</th>
                                             <th>Phone</th>
-                                            <th>Join Date</th>
                                             <th>Role</th>
                                             <th>Action</th>
+                                            <th style="display:none;">UserID</th>
+                                            <th style="display:none;">FirstName</th>
+                                            <th style="display:none;">LastName</th>
+                                            <th style="display:none;">Email</th>
+                                            <th style="display:none;">Enterprise Email</th>
+                                            <th style="display:none;">Role</th>
+                                            <th style="display:none;">Phone</th>
+                                            <th style="display:none;">Birthdate</th>
+                                            <th style="display:none;">Account Number</th>
+                                            <th style="display:none;">National Number</th>
+                                            <th style="display:none;">Marital Status</th>
+                                            <th style="display:none;">Gender</th>
+                                            <th style="display:none;">Address Line 1</th>
+                                            <th style="display:none;">Address Line 2</th>
+                                            <th style="display:none;">Zipcode</th>
+                                            <th style="display:none;">City</th>
+                                            <th style="display:none;">Country</th>
+                                            <th style="display:none;">Contact Person Name</th>
+                                            <th style="display:none;">Contact Phone</th>
+                                            <th style="display:none;">Gender Name</th>
+                                            <th style="display:none;">RoleID</th>
+                                            <th style="display:none;">Hash</th>
+                                            <th style="display:none;">BDAY</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
+                                        <?php
+                                        //Include DB Connection
+                                        include('db.php');
+                                        $sql = "SELECT * FROM `users_user`
+                                        INNER JOIN `users_roles_list` ON users_user.User_RoleID = users_roles_list.Roles_ListID
+                                        INNER JOIN `users_gender`ON users_user.User_Gender = users_gender.Gender_GenderID
+                                        INNER JOIN `user_marital_status` ON users_user.User_Marital_Status = user_marital_status.Marital_StatusID 
+                                        WHERE `User_Active` = '1'";
+
+                                        $result = $conn->query($sql);
+
+                                        if ($result->num_rows > 0) {
+                                        // output data of each row
+                                        while($row = $result->fetch_assoc()) {
+                                            $V_birthdate = $row["User_BirthDate"];
+                                            $V_birthdate = date("d-m-Y", strtotime($V_birthdate));
+                                            echo '<tr>
                                             <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar1.jpg" class="rounded-circle avatar" alt="">
+                                                <img src="'.$row["User_Profile_Picture"].'" class="rounded-circle avatar" alt="">
                                             </td>
                                             <td>
-                                                <h6 class="mb-0">Marshall Nichols</h6>
-                                                <span>marshall-n@gmail.com</span>
+                                                <h6 class="mb-0">'.$row["User_FirstName"].' '. $row["User_LastName"].'</h6>
+                                                <span><a href="mailto:'.$row["User_Email"].'">'.$row["User_Email"].'</a></span>
                                             </td>
-                                            <td><span>LA-0215</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>24 Jun, 2015</td>
-                                            <td>Web Designer</td>
+                                            <td><span><a href="callto:'.$row["User_Phone"].'">'.$row["User_Phone"].'</a></span></td>
+                                            <td>'.$row["Roles_Name"].'</td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
+                                                <button type="button" class="btn btn-sm btn-outline-primary infobtn" title="info"><i class="fa fa-info"></i></a>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary editbtn" title="Edit"><i class="fa fa-edit"></i></button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger deletebtn" title="Delete"><i class="fa fa-trash-o"></i></button>
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar2.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Susie Willis</h6>
-                                                <span>sussie-w@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0216</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>28 Jun, 2015</td>
-                                            <td>Web Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar3.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Debra Stewart</h6>
-                                                <span>debra@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0218</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>21 July, 2015</td>
-                                            <td>Web Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar4.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Francisco Vasquez</h6>
-                                                <span>francis-v@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0222</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>18 Jan, 2016</td>
-                                            <td>Team Leader</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar5.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Jane Hunt</h6>
-                                                <span>jane-hunt@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0232</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>08 Mar, 2016</td>
-                                            <td>Android Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar6.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Darryl Day</h6>
-                                                <span>darryl.day@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0233</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>13 Nov, 2016</td>
-                                            <td>IOS Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar1.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Marshall Nichols</h6>
-                                                <span>marshall-n@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0215</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>24 Jun, 2015</td>
-                                            <td>Web Designer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar2.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Susie Willis</h6>
-                                                <span>sussie-w@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0216</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>28 Jun, 2015</td>
-                                            <td>Web Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar3.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Debra Stewart</h6>
-                                                <span>debra@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0218</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>21 July, 2015</td>
-                                            <td>Web Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar4.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Francisco Vasquez</h6>
-                                                <span>francis-v@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0222</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>18 Jan, 2016</td>
-                                            <td>Team Leader</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar5.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Jane Hunt</h6>
-                                                <span>jane-hunt@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0232</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>08 Mar, 2016</td>
-                                            <td>Android Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">
-                                            <label class="fancy-checkbox">
-                                                    <input class="checkbox-tick" type="checkbox" name="checkbox">
-                                                    <span></span>
-                                                </label>
-                                                <img src="assets/images/xs/avatar6.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Darryl Day</h6>
-                                                <span>darryl.day@gmail.com</span>
-                                            </td>
-                                            <td><span>LA-0233</span></td>
-                                            <td><span>+ 264-625-2583</span></td>
-                                            <td>13 Nov, 2016</td>
-                                            <td>IOS Developer</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fa fa-edit"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Delete" data-type="confirm"><i class="fa fa-trash-o"></i></button>
-                                            </td>
-                                        </tr>
+                                            <td style="display:none;">'.$row["User_UserID"].'</td>
+                                            <td style="display:none;">'.$row["User_FirstName"].'</td>
+                                            <td style="display:none;">'.$row["User_LastName"].'</td>
+                                            <td style="display:none;">'.$row["User_Email"].'</td>
+                                            <td style="display:none;">'.$row["User_Enterprise_Email"].'</td>
+                                            <td style="display:none;">'.$row["Roles_Name"].'</td>
+                                            <td style="display:none;">'.$row["User_Phone"].'</td>
+                                            <td style="display:none;">'.$V_birthdate.'</td>
+                                            <td style="display:none;">'.$row["User_Account_Number"].'</td>
+                                            <td style="display:none;">'.$row["User_National_Insurance_Number"].'</td>
+                                            <td style="display:none;">'.$row["User_Marital_Status"].'</td>
+                                            <td style="display:none;">'.$row["User_Gender"].'</td>
+                                            <td style="display:none;">'.$row["User_Address_Line_1"].'</td>
+                                            <td style="display:none;">'.$row["User_Address_Line_2"].'</td>
+                                            <td style="display:none;">'.$row["User_Zipcode"].'</td>
+                                            <td style="display:none;">'.$row["User_City"].'</td>
+                                            <td style="display:none;">'.$row["User_Country"].'</td>
+                                            <td style="display:none;">'.$row["User_Contact_Person_Name"].'</td>
+                                            <td style="display:none;">'.$row["User_Contact_Person_Phone"].'</td>
+                                            <td style="display:none;">'.$row["Gender_Name"].'</td>
+                                            <td style="display:none;">'.$row["User_RoleID"].'</td>
+                                            <td style="display:none;">'.$row["User_Hash"].'</td>
+                                            <td style="display:none;">'.$row["User_BirthDate"].'</td>
+                                        </tr>';
+                                        }
+                                        } else {
+                                        echo "0 results";
+                                        }
+                                        $conn->close();
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -797,81 +556,527 @@
     
 </div>
 
-<!-- Default Size -->
-<div class="modal animated zoomIn" id="addcontact" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="title" id="defaultModalLabel">Add Contact</h6>
-            </div>
-            <div class="modal-body">
-                <div class="row clearfix">
-                    <div class="col-md-6">
-                        <div class="form-group">                                    
-                            <input type="text" class="form-control" placeholder="Name">
+<!-- Add employee -->
+<form method="POST">
+    <div class="modal animated zoomIn" id="addcontact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Add Contact</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">                                    
+                                <input type="text" class="form-control" name="Signup-FirstName" placeholder="FirstName" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">                                    
-                            <input type="text" class="form-control" placeholder="Email ID">
+                        <div class="col-md-6">
+                            <div class="form-group">                                    
+                                <input type="text" class="form-control" name="Signup-LastName" placeholder="LastName" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="form-group">                                    
-                            <input type="number" class="form-control" placeholder="Phone Number">
+                        <div class="col-md-12">
+                            <div class="form-group">                                    
+                                <input type="text" class="form-control" name="Signup-Email" placeholder="Email" required>
+                            </div>
                         </div>
-                    </div>    
-                    <div class="col-md-4">
-                        <div class="form-group">                                   
-                            <input type="text" class="form-control" placeholder="Employee ID">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">                                    
-                            <input type="text" class="form-control" placeholder="Join Date">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">                                    
-                            <input type="text" class="form-control" placeholder="Role">
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="form-group">                                            
-                            <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
-                            <small id="fileHelp" class="form-text text-muted">This is some placeholder block-level help text for the above input. It's a bit lighter and easily wraps to a new line.</small>
-                        </div>
-                        <hr>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">                                    
-                            <input type="text" class="form-control" placeholder="Facebook">
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">                                   
-                            <input type="text" class="form-control" placeholder="Twitter">
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">                                    
-                            <input type="text" class="form-control" placeholder="Linkedin">
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">                                    
-                            <input type="text" class="form-control" placeholder="instagram">
+                        <div class="col-6">
+                            <div class="form-group">                                    
+                                <input type="password" class="form-control" name="Signup-Password"placeholder="Password" required>
+                            </div>
+                        </div>  
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <select id="Signup-Role" name="Signup-Role" class="form-control">
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM users_roles_list";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Roles_ListID"].'">'.$row["Roles_Name"].'</option>';
+                                        }
+                                        } else {
+                                        echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Add</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Add"class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
+
+<!-- Add employee -->
+<form method="POST">
+    <div class="modal animated zoomIn" id="infocontact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="max-width: 800px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Info Contact</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-user"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-FirstName" id="IM-FirstName" placeholder="FirstName" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-user"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-LastName" id="IM-LastName" placeholder="LastName" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-envelope-o"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Email" id="IM-Email" placeholder="Email" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-envelope-o"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Enterprise-Email" id="IM-Enterprise-Email" placeholder="Enterprise Email" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-gavel"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Roles-Name" id="IM-Roles-Name" placeholder="Role" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Birthdate" id="IM-Birthdate" placeholder="Birthdate" disabled>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="col-md-12">
+                        <label>Adres</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Address-Line-1" id="IM-Address-Line-1" placeholder="Address Line 1" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Address-Line-2" id="IM-Address-Line-2" placeholder="Address Line 2" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Zipcode" id="IM-Zipcode" placeholder="Zipcode" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-City" id="IM-City" placeholder="City" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Country" id="IM-Country" placeholder="Country" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>National Insurance number</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-life-ring"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-National-Insurance" id="IM-National-Insurance" placeholder="National Insurance Number" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>Account number</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-credit-card"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Account-Number" id="IM-Account-Number" placeholder="Account Number" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>Phone</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Phone" id="IM-Phone" placeholder="Phone Number" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Gender</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-female"></i></span>
+                                </div>
+                                <select name="IM-Gender" id="IM-Gender" class="form-control" disabled>
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM users_gender";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Gender_GenderID"].'">'.$row["Gender_Name"].'</option>';
+                                        }
+                                        } else {
+                                        echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>                
+                        </div>
+                        <div class="col-md-6">
+                        <label>Contact Person</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-users"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Contact-Name" id="IM-Contact-Name" placeholder="Contact Person Name" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>Contact Person Phone</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="IM-Contact-Phone" id="IM-Contact-Phone" placeholder="Contact Person Phone" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Marital Status</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-gittip"></i></span>
+                                </div>
+                                <select name="IM-Marital-Status" id="IM-Marital-Status" class="form-control" disabled>
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM `user_marital_status`";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Marital_StatusID"].'">'.$row["Marital_Name"].'</option>';
+                                        }
+                                        } else {
+                                        echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Edit employee -->
+<form method="POST">
+    <div class="modal animated zoomIn" id="editcontact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="max-width: 800px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Edit Contact</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <input type="hidden" name="EM-ID" id="EM-ID">
+                                <input type="hidden" name="EM-HASH" id="EM-HASH">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-user"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-FirstName" id="EM-FirstName" placeholder="FirstName">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-user"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-LastName" id="EM-LastName" placeholder="LastName">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-envelope-o"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Email" id="EM-Email" placeholder="Email">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-envelope-o"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Enterprise-Email" id="EM-Enterprise-Email" placeholder="Enterprise Email">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-gavel"></i></span>
+                                </div>
+                                <select name="EM-Role" id="EM-Role" class="form-control">
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM users_roles_list";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Roles_ListID"].'">'.$row["Roles_Name"].'</option>';
+                                        }
+                                        } else {
+                                        echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="EM-Birthdate" id="EM-Birthdate" placeholder="Birthdate">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="col-md-12">
+                        <label>Adres</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Address-Line-1" id="EM-Address-Line-1" placeholder="Address Line 1">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Address-Line-2" id="EM-Address-Line-2" placeholder="Address Line 2">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Zipcode" id="EM-Zipcode" placeholder="Zipcode">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-City" id="EM-City" placeholder="City">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-pointer"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Country" id="EM-Country" placeholder="Country">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>National Insurance number</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-life-ring"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-National-Insurance" id="EM-National-Insurance" placeholder="National Insurance Number">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>Account number</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-credit-card"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Account-Number" id="EM-Account-Number" placeholder="Account Number">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>Phone</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Phone" id="EM-Phone" placeholder="Phone Number">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Gender</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-female"></i></span>
+                                </div>
+                                <select name="EM-Gender" id="EM-Gender" class="form-control">
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM users_gender";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Gender_GenderID"].'">'.$row["Gender_Name"].'</option>';
+                                        }
+                                        } else {
+                                        echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>                
+                        </div>
+                        <div class="col-md-6">
+                        <label>Contact Person</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-users"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Contact-Name" id="EM-Contact-Name" placeholder="Contact Person Name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>Contact Person Phone</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                </div>
+                                <input type="text" class="form-control" name="EM-Contact-Phone" id="EM-Contact-Phone" placeholder="Contact Person Phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Marital Status</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-gittip"></i></span>
+                                </div>
+                                <select name="EM-Marital-Status" id="EM-Marital-Status" class="form-control">
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM `user_marital_status`";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Marital_StatusID"].'">'.$row["Marital_Name"].'</option>';
+                                        }
+                                        } else {
+                                        echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Edit"class="btn btn-primary">EDIT</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Add employee -->
+<form method="POST">
+    <div class="modal animated zoomIn" id="deletecontact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Delete Contact</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                        <input type="hidden" name="DM-ID" id="DM-ID">
+                        <input type="hidden" name="DM-HASH" id="DM-HASH">
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <i class="fa fa-times-circle"></i> 
+                            You are about to delete the account below. Are you sure you want to delete this account? You cannot restore this!
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">                                    
+                                <input type="text" class="form-control" name="DM-FirstName" id="DM-FirstName" placeholder="FirstName" Disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">                                    
+                                <input type="text" class="form-control" name="DM-LastName" id="DM-LastName" placeholder="LastName" Disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Delete"class="btn btn-danger">DELETE</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 
 <!-- Javascript -->
 <script src="assets/bundles/libscripts.bundle.js"></script>    
@@ -883,5 +1088,85 @@
 <script src="assets/bundles/mainscripts.bundle.js"></script>
 <script src="assets/js/pages/tables/jquery-datatable.js"></script>
 <script src="assets/js/pages/ui/dialogs.js"></script>
+
+<script>
+  $(document).ready(function () {
+		$('.infobtn').on('click', function() {
+			$('#infocontact').modal('show');
+			$tr = $(this).closest('tr');
+			var data = $tr.children("td").map(function() {
+				return $(this).text();
+			}).get();
+			
+			console.log(data);
+            $('#IM-FirstName').val(data[6]);
+            $('#IM-LastName').val(data[7]);
+            $('#IM-Email').val(data[8]);
+            $('#IM-Enterprise-Email').val(data[9]);
+            $('#IM-Roles-Name').val(data[10]);
+            $('#IM-Phone').val(data[11]);
+            $('#IM-Birthdate').val(data[12]);
+            $('#IM-Account-Number').val(data[13]);
+            $('#IM-National-Insurance').val(data[14]);
+            $('#IM-Marital-Status').val(data[15]);
+            $('#IM-Gender').val(data[16]);
+            $('#IM-Address-Line-1').val(data[17]);
+            $('#IM-Address-Line-2').val(data[18]);
+            $('#IM-Zipcode').val(data[19]);
+            $('#IM-City').val(data[20]);
+            $('#IM-Country').val(data[21]);
+            $('#IM-Contact-Name').val(data[22]);
+            $('#IM-Contact-Phone').val(data[23]);
+		});
+  });
+  $(document).ready(function () {
+		$('.editbtn').on('click', function() {
+			$('#editcontact').modal('show');
+			$tr = $(this).closest('tr');
+			var data = $tr.children("td").map(function() {
+				return $(this).text();
+			}).get();
+			
+			console.log(data);
+            $('#EM-ID').val(data[5]);
+            $('#EM-FirstName').val(data[6]);
+            $('#EM-LastName').val(data[7]);
+            $('#EM-Email').val(data[8]);
+            $('#EM-Enterprise-Email').val(data[9]);
+            $('#EM-Roles-Name').val(data[10]);
+            $('#EM-Phone').val(data[11]);
+            $('#EM-Account-Number').val(data[13]);
+            $('#EM-National-Insurance').val(data[14]);
+            $('#EM-Marital-Status').val(data[15]);
+            $('#EM-Gender').val(data[16]);
+            $('#EM-Address-Line-1').val(data[17]);
+            $('#EM-Address-Line-2').val(data[18]);
+            $('#EM-Zipcode').val(data[19]);
+            $('#EM-City').val(data[20]);
+            $('#EM-Country').val(data[21]);
+            $('#EM-Contact-Name').val(data[22]);
+            $('#EM-Contact-Phone').val(data[23]);
+            $('#EM-Role').val(data[25]);
+            $('#EM-HASH').val(data[26]);
+            $('#EM-Birthdate').val(data[27]);
+		});
+  });
+  $(document).ready(function () {
+		$('.deletebtn').on('click', function() {
+			$('#deletecontact').modal('show');
+			$tr = $(this).closest('tr');
+			var data = $tr.children("td").map(function() {
+				return $(this).text();
+			}).get();
+			
+			console.log(data);
+            $('#DM-ID').val(data[5]);
+            $('#DM-FirstName').val(data[6]);
+            $('#DM-LastName').val(data[7]);
+            $('#DM-HASH').val(data[26]);
+		});
+  });
+  </script>
+  5
 </body>
 </html>

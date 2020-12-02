@@ -1,16 +1,6 @@
 <?php
+include('account-check.php');
 
-session_start();
-
-if ($_SESSION['S_Session_Active'] == "False") {
-    header('location: page-login.php?page=2-1');
-}
-else if ($_SESSION['S_User_Active'] == 0) {
-    header('location: page-login.php?page=2-2');
-}
-else{
-
-}
 ?>
 <!doctype html>
 <html lang="en">
@@ -48,105 +38,7 @@ else{
 <!-- Overlay For Sidebars -->
 
 <div id="wrapper">
-
-    <nav class="navbar navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-btn">
-                <button type="button" class="btn-toggle-offcanvas"><i class="lnr lnr-menu fa fa-bars"></i></button>
-            </div>
-
-            <div class="navbar-brand">
-                <a href="index.php"><img src="assets/images/logo.svg" alt="Lucid Logo" class="img-responsive logo"></a>                
-            </div>
-            
-            <div class="navbar-right">
-                <div id="navbar-menu">
-                    <ul class="nav navbar-nav">                        
-                        <li><a href="app-events.php" class="icon-menu d-none d-sm-block d-md-none d-lg-block"><i class="icon-calendar"></i></a></li>
-                        <li><a href="app-chat.php" class="icon-menu d-none d-sm-block"><i class="icon-bubbles"></i></a></li>
-                        <li><a href="app-inbox.php" class="icon-menu d-none d-sm-block"><i class="icon-envelope"></i><span class="notification-dot"></span></a></li>
-                        <li class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle icon-menu" data-toggle="dropdown">
-                                <i class="icon-bell"></i>
-                                <span class="notification-dot"></span>
-                            </a>
-                            <ul class="dropdown-menu notifications animated shake">
-                                <li class="header"><strong>You have 4 new Notifications</strong></li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-info text-warning"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Campaign <strong>Holiday Sale</strong> is nearly reach budget limit.</p>
-                                                <span class="timestamp">10:00 AM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>                               
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-like text-success"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Your New Campaign <strong>Holiday Sale</strong> is approved.</p>
-                                                <span class="timestamp">11:30 AM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                 <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-pie-chart text-info"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Website visits from Twitter is 27% higher than last week.</p>
-                                                <span class="timestamp">04:00 PM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-info text-danger"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Error on website analytics configurations</p>
-                                                <span class="timestamp">Yesterday</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="footer"><a href="javascript:void(0);" class="more">See all notifications</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle icon-menu" data-toggle="dropdown"><i class="icon-equalizer"></i></a>
-                            <ul class="dropdown-menu user-menu menu-icon animated bounceIn">
-                                <li class="menu-heading">ACCOUNT SETTINGS</li>
-                                <li><a href="javascript:void(0);"><i class="icon-note"></i> <span>Basic</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-equalizer"></i> <span>Preferences</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-lock"></i> <span>Privacy</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-bell"></i> <span>Notifications</span></a></li>
-                                <li class="menu-heading">BILLING</li>
-                                <li><a href="javascript:void(0);"><i class="icon-credit-card"></i> <span>Payments</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-printer"></i> <span>Invoices</span></a></li>                                
-                                <li><a href="javascript:void(0);"><i class="icon-refresh"></i> <span>Renewals</span></a></li>
-                            </ul>
-                        </li>
-                        <li><a href="page-login.php?page=3" class="icon-menu"><i class="icon-login"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php include_once('navigation.php') ;?>  
 
     <div id="left-sidebar" class="sidebar">
         <div class="sidebar-scroll">
@@ -180,18 +72,25 @@ else{
                             <li class="active"><a href="index.php"><i class="icon-speedometer"></i><span>HR Dashboard</span></a></li>
                             <li><a href="app-holidays.php"><i class="icon-list"></i>Holidays</a></li>
                             <li><a href="app-events.php"><i class="icon-calendar"></i>Events</a></li>
-                            <li><a href="app-activities.php"><i class="icon-badge"></i>Activities</a></li>
-                            <li><a href="app-social.php"><i class="icon-globe"></i>HR Social</a></li>
                             <li>
                                 <a href="#Employees" class="has-arrow"><i class="icon-users"></i><span>Employees</span></a>
                                 <ul>
-                                    <li><a href="emp-all.php">All Employees</a></li>
+                                    <?php 
+                                    if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                                        echo '<li><a href="emp-all.php">All Employees</a></li>';
+                                    }
+                                    ?>
                                     <li><a href="emp-leave.php">Leave Requests</a></li>
-                                    <li><a href="emp-attendance.php">Attendance</a></li>
-                                    <li><a href="emp-departments.php">Departments</a></li>
+                                    <?php 
+                                    if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                                        echo '<li><a href="emp-attendance.php">Attendance</a></li>';
+                                    }
+                                    ?>
                                 </ul>
                             </li>
-                            <li>
+                            <?php 
+                            if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                            echo '<li>
                                 <a href="#Accounts" class="has-arrow"><i class="icon-briefcase"></i><span>Accounts</span></a>
                                 <ul>
                                     <li><a href="acc-payments.php">Payments</a></li>
@@ -205,28 +104,17 @@ else{
                                     <li><a href="payroll-payslip.php">Payslip</a></li>
                                     <li><a href="payroll-salary.php">Employee Salary</a></li>                                    
                                 </ul>
-                            </li>
-                            <li>
+                            </li>';
+                            }
+                            if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2)){
+                            echo '<li>
                                 <a href="#Report" class="has-arrow"><i class="icon-bar-chart"></i><span>Report</span></a>
                                 <ul>
                                     <li><a href="report-expense.php">Expense Report</a></li>
                                     <li><a href="report-invoice.php">Invoice Report</a></li>                                    
                                 </ul>
-                            </li>
-                            <li><a href="app-users.php"><i class="icon-user"></i>Users</a></li>
-                            <li>
-                                <a href="#Authentication" class="has-arrow"><i class="icon-lock"></i><span>Authentication</span></a>
-                                <ul>
-                                    <li><a href="page-login.php">Login</a></li>
-                                    <li><a href="page-register.php">Register</a></li>
-                                    <li><a href="page-lockscreen.php">Lockscreen</a></li>
-                                    <li><a href="page-forgot-password.php">Forgot Password</a></li>
-                                    <li><a href="page-404.php">Page 404</a></li>
-                                    <li><a href="page-403.php">Page 403</a></li>
-                                    <li><a href="page-500.php">Page 500</a></li>
-                                    <li><a href="page-503.php">Page 503</a></li>
-                                </ul>
-                            </li>
+                            </li>';
+                            }?>
                         </ul>
                     </nav>
                 </div>

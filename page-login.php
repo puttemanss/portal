@@ -23,7 +23,16 @@ else if($_GET["page"] == "3")
     session_unset();
     // destroy the session
     session_destroy();
-    $error_div = '<div class="alert alert-danger alert-dismissible" role="alert"><i class="fa fa-times-circle"></i> Your account is not confirmed. Please see your mail.</div>';
+    $error_div = '<div class="alert alert-info alert-dismissible" role="alert"><i class="fa fa-info-circle"></i> You have successfully logged out.</div>';
+}
+else if($_GET["page"] == "4")
+{   
+    session_start();
+    // remove all session variables
+    session_unset();
+    // destroy the session
+    session_destroy();
+    $error_div = '<div class="alert alert-danger alert-dismissible" role="alert"><i class="fa fa-times-circle"></i>Your account has been deleted. Ask your superior for more information.</div>';
 }
 else{
     $G_Email = "user@domain.com";
@@ -49,6 +58,7 @@ if(isset($_POST["Login_Button"]))
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
             $_SESSION['S_User_UserID'] = $row['User_UserID'];
+            $V_User_UserID = $row['User_UserID'];
             $_SESSION['S_User_FirstName'] = $row['User_FirstName'];
             $_SESSION['S_User_LastName'] = $row['User_LastName'];
             $_SESSION['S_User_Name'] = $row['User_FirstName'] . " " . $row['User_LastName'];
@@ -57,9 +67,7 @@ if(isset($_POST["Login_Button"]))
             $_SESSION['S_User_Profile_Picture'] = $row['User_Profile_Picture'];
             $_SESSION['S_User_Active'] = $row['User_Active'];
             $V_User_Active = $row['User_Active'];
-            echo '<script language="javascript">';
-            echo 'alert("'.$V_User_Active.'")';
-            echo '</script>';
+            $_SESSION['S_User_Role'] = $row['User_RoleID'];
             if($V_User_Active == 1){
                 $_SESSION['S_Session_Active'] = "True";
                 header("location: index.php");
