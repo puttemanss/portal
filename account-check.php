@@ -1,5 +1,11 @@
 <?php
 session_start();
+if (!isset($_SESSION['S_Session_Active'])) {
+    header('location: page-login.php?page=2-1');
+}
+else if ($_SESSION['S_User_Active'] == 0) {
+    header('location: page-login.php?page=2-2');
+}
 $AC_UserID = $_SESSION['S_User_UserID'];
 
 include('db.php');
@@ -19,12 +25,7 @@ if ($AC_result->num_rows > 0) {
         header('location: page-login.php?page=4');
     }
     else{
-        if (!isset($_SESSION['S_Session_Active'])) {
-            header('location: page-login.php?page=2-1');
-        }
-        else if ($_SESSION['S_User_Active'] == 0) {
-            header('location: page-login.php?page=2-2');
-        }
+        
     }
   }
 } else {
