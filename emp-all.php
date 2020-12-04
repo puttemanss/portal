@@ -1167,6 +1167,5 @@ employee_edit_permission();
 		});
   });
   </script>
-  5
 </body>
 </html>

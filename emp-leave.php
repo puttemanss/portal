@@ -1,8 +1,165 @@
+<?php
+include('account-check.php');
+
+if(isset($_POST["Button_Add_Own"]))
+{
+    include('db.php');
+    $V_Check_UserID = "";
+    $V_AO_ID = $_SESSION['S_User_UserID'];
+    $V_AO_Type = $_POST['AOM-Type'];
+    $V_AO_StartDate = date("Y-m-d", strtotime($_POST['AOM-StartDate']));
+    $V_AO_EndDate = date("Y-m-d", strtotime($_POST['AOM-EndDate']));
+    $V_AO_Reason = $_POST['AOM-Reason'];
+    $V_AO_Date_Decision = date("Y-m-d");
+
+    $sql = "INSERT INTO `users_leave_requests`(`Leave_UserID`, `Leave_TypeID`, `Leave_StartDate`, `Leave_EndDate`, `Leave_Reason`, `Leave_Status`,`Leave_Date_Requested`) 
+    VALUES ('$V_AO_ID','$V_AO_Type','$V_AO_StartDate','$V_AO_EndDate','$V_AO_Reason','1','$V_AO_Date_Decision')";
+    
+    if ($conn->query($sql) === TRUE) {
+        header("Refresh:0");
+      } else {
+        echo "Error updating record: " . $conn->error;
+      }
+      
+      $conn->close();
+}
+if(isset($_POST["Button_Add_Other"]))
+{
+    include('db.php');
+    $V_AO_ID = $_POST['AO-Name'];
+    $V_AO_Type = $_POST['AO-Type'];
+    $V_AO_StartDate = date("Y-m-d", strtotime($_POST['AO-StartDate']));
+    $V_AO_EndDate = date("Y-m-d", strtotime($_POST['AO-EndDate']));
+    $V_AO_Reason = $_POST['AO-Reason'];
+    $V_AO_Status = $_POST['AO-Status'];
+    $V_AO_Date_Decision = date("Y-m-d");
+
+    $sql = "INSERT INTO `users_leave_requests`(`Leave_UserID`, `Leave_TypeID`, `Leave_StartDate`, `Leave_EndDate`, `Leave_Reason`, `Leave_Status`,`Leave_Date_Requested`) 
+    VALUES ('$V_AO_ID','$V_AO_Type','$V_AO_StartDate','$V_AO_EndDate','$V_AO_Reason','$V_AO_Status','$V_AO_Date_Decision')";
+    $sql;
+    if ($conn->query($sql) === TRUE) {
+        //header("Refresh:0");
+      } else {
+        echo "Error updating record: " . $conn->error;
+      }
+      
+      $conn->close();
+}
+if(isset($_POST["Button_Edit_Own"]))
+{
+    include('db.php');
+    $V_Check_UserID = "";
+    $V_EO_ID = $_POST['EOM-ID'];
+    if($V_EO_ID == $_SESSION['S_User_UserID'])
+    {
+        $V_Check_UserID = $_POST['EOM-ID'];
+    }
+    $V_EO_Type = $_POST['EOM-Type'];
+    $V_EO_StartDate = $_POST['EOM-StartDate'];
+    $V_EO_EndDate = $_POST['EOM-EndDate'];
+    $V_EO_Reason = $_POST['EOM-Reason'];
+    $V_EO_RequestID = $_POST['EOM-RequestID'];
+    
+    $sql = "UPDATE `users_leave_requests` SET `Leave_TypeID`='$V_EO_Type',`Leave_StartDate`='$V_EO_StartDate', `Leave_EndDate`='$V_EO_EndDate',
+    `Leave_Reason`='$V_EO_Reason' WHERE `Leave_UserID` = '$V_Check_UserID' AND `Leave_RequestID` = '$V_EO_RequestID' ";
+    
+    if ($conn->query($sql) === TRUE) {
+        header("emp-leave.php");
+      } else {
+        echo "Error updating record: " . $conn->error;
+      }
+      
+      $conn->close();
+}
+
+if(isset($_POST["Button_Delete_Own"]))
+{
+    include('db.php');
+    $V_Check_UserID = "";
+    $V_EO_ID = $_POST['EOM-ID'];
+    $V_EO_RequestID = $_POST['EOM-RequestID'];
+    if($V_EO_ID == $_SESSION['S_User_UserID'])
+    {
+        $V_Check_UserID = $_POST['EOM-ID'];
+    }
+
+    $sql = "UPDATE `users_leave_requests` SET `Leave_Delete`='2' WHERE `Leave_UserID` = '$V_Check_UserID' AND `Leave_RequestID` = '$V_EO_RequestID'";
+    echo $sql;
+    
+    if ($conn->query($sql) === TRUE) {
+        header("emp-leave.php");
+      } else {
+        echo "Error updating record: " . $conn->error;
+      }
+      
+      $conn->close();
+}
+
+if(isset($_POST["Button_Approve"]))
+{
+    include('db.php');
+    $V_AP_ID = $_POST['AP-ID'];
+    $V_Decision_UserID = $_SESSION['S_User_UserID'];
+    $V_AP_RequestID = $_POST['AP-RequestID'];
+    $V_AP_Date_Decision = date("Y-m-d");
+
+
+    $sql = "UPDATE `users_leave_requests` SET `Leave_Status`='2', `Leave_Date_Decision`='$V_AP_Date_Decision', `Leave_Decision_UserID`='$V_Decision_UserID' WHERE `Leave_UserID` = '$V_AP_ID' AND `Leave_RequestID` = '$V_AP_RequestID'";
+    
+    if ($conn->query($sql) === TRUE) {
+        header("emp-leave.php");
+      } else {
+        echo "Error updating record: " . $conn->error;
+      }
+      
+      $conn->close();
+}
+
+if(isset($_POST["Button_Decline"]))
+{
+    include('db.php');
+    $V_AP_ID = $_POST['DP-ID'];
+    $V_Decision_UserID = $_SESSION['S_User_UserID'];
+    $V_AP_RequestID = $_POST['DP-RequestID'];
+    $V_AP_Date_Decision = date("Y-m-d");
+
+
+    $sql = "UPDATE `users_leave_requests` SET `Leave_Status`='3', `Leave_Date_Decision`='$V_AP_Date_Decision', `Leave_Decision_UserID`='$V_Decision_UserID' WHERE `Leave_UserID` = '$V_AP_ID' AND `Leave_RequestID` = '$V_AP_RequestID'";
+    
+    if ($conn->query($sql) === TRUE) {
+        header("emp-leave.php");
+      } else {
+        echo "Error updating record: " . $conn->error;
+      }
+      
+      $conn->close();
+}
+if(isset($_POST["Button_Edit"]))
+{
+    include('db.php');
+    $V_EP_ID = $_POST['EP-ID'];
+    $V_Decision_UserID = $_SESSION['S_User_UserID'];
+    $V_EP_RequestID = $_POST['EP-RequestID'];
+    $V_EP_Date_Decision = date("Y-m-d");
+    $V_EP_Status = $_POST['EP-Status'];
+
+
+    $sql = "UPDATE `users_leave_requests` SET `Leave_Status`='$V_EP_Status', `Leave_Date_Decision`='$V_EP_Date_Decision', `Leave_Decision_UserID`='$V_Decision_UserID' WHERE `Leave_UserID` = '$V_EP_ID' AND `Leave_RequestID` = '$V_EP_RequestID'";
+    
+    if ($conn->query($sql) === TRUE) {
+        header("emp-leave.php");
+      } else {
+        echo "Error updating record: " . $conn->error;
+      }
+      
+      $conn->close();
+}
+?>
 <!doctype html>
 <html lang="en">
 
 <head>
-<title>:: Lucid HR :: Leave Request</title>
+<title>Leave Request</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -16,10 +173,24 @@
 <link rel="stylesheet" href="assets/vendor/sweetalert/sweetalert.css"/>
 <link rel="stylesheet" href="assets/vendor/jquery-datatable/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="assets/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.min.css">
+<link rel="stylesheet" href="assets/vendor/multi-select/css/multi-select.css">
+
+<link rel="stylesheet" href="assets/vendor/bootstrap-multiselect/bootstrap-multiselect.css">
+<link rel="stylesheet" href="assets/vendor/bootstrap-colorpicker/css/bootstrap-colorpicker.css" />
+<link rel="stylesheet" href="assets/vendor/bootstrap-tagsinput/bootstrap-tagsinput.css">
+<link rel="stylesheet" href="assets/vendor/nouislider/nouislider.min.css" />
+
+<!-- Select2 -->
+<link rel="stylesheet" href="assets/vendor/select2/select2.css" />
 
 <!-- MAIN CSS -->
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="stylesheet" href="assets/css/color_skins.css">
+
+<style>
+    .demo-card label{ display: block; position: relative;}
+    .demo-card .col-lg-4{ margin-bottom: 30px;}
+</style>
 </head>
 <body class="theme-orange">
 
@@ -33,126 +204,15 @@
 <!-- Overlay For Sidebars -->
 
 <div id="wrapper">
-
-    <nav class="navbar navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-btn">
-                <button type="button" class="btn-toggle-offcanvas"><i class="lnr lnr-menu fa fa-bars"></i></button>
-            </div>
-
-            <div class="navbar-brand">
-                <a href="index.php"><img src="assets/images/logo.svg" alt="Lucid Logo" class="img-responsive logo"></a>                
-            </div>
-            
-            <div class="navbar-right">
-                <form id="navbar-search" class="navbar-form search-form">
-                    <input value="" class="form-control" placeholder="Search here..." type="text">
-                    <button type="button" class="btn btn-default"><i class="icon-magnifier"></i></button>
-                </form>                
-
-                <div id="navbar-menu">
-                    <ul class="nav navbar-nav">
-                        <li>
-                            <a href="app-events.php" class="icon-menu d-none d-sm-block d-md-none d-lg-block"><i class="icon-calendar"></i></a>
-                        </li>
-                        <li>
-                            <a href="app-chat.php" class="icon-menu d-none d-sm-block"><i class="icon-bubbles"></i></a>
-                        </li>
-                        <li>
-                            <a href="app-inbox.php" class="icon-menu d-none d-sm-block"><i class="icon-envelope"></i><span class="notification-dot"></span></a>
-                        </li>
-                        <li class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle icon-menu" data-toggle="dropdown">
-                                <i class="icon-bell"></i>
-                                <span class="notification-dot"></span>
-                            </a>
-                            <ul class="dropdown-menu notifications animated shake">
-                                <li class="header"><strong>You have 4 new Notifications</strong></li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-info text-warning"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Campaign <strong>Holiday Sale</strong> is nearly reach budget limit.</p>
-                                                <span class="timestamp">10:00 AM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>                               
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-like text-success"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Your New Campaign <strong>Holiday Sale</strong> is approved.</p>
-                                                <span class="timestamp">11:30 AM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                    <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-pie-chart text-info"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Website visits from Twitter is 27% higher than last week.</p>
-                                                <span class="timestamp">04:00 PM Today</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);">
-                                        <div class="media">
-                                            <div class="media-left">
-                                                <i class="icon-info text-danger"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <p class="text">Error on website analytics configurations</p>
-                                                <span class="timestamp">Yesterday</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li class="footer"><a href="javascript:void(0);" class="more">See all notifications</a></li>
-                            </ul>
-                        </li>
-                        <li class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle icon-menu" data-toggle="dropdown"><i class="icon-equalizer"></i></a>
-                            <ul class="dropdown-menu user-menu menu-icon animated bounceIn">
-                                <li class="menu-heading">ACCOUNT SETTINGS</li>
-                                <li><a href="javascript:void(0);"><i class="icon-note"></i> <span>Basic</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-equalizer"></i> <span>Preferences</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-lock"></i> <span>Privacy</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-bell"></i> <span>Notifications</span></a></li>
-                                <li class="menu-heading">BILLING</li>
-                                <li><a href="javascript:void(0);"><i class="icon-credit-card"></i> <span>Payments</span></a></li>
-                                <li><a href="javascript:void(0);"><i class="icon-printer"></i> <span>Invoices</span></a></li>                                
-                                <li><a href="javascript:void(0);"><i class="icon-refresh"></i> <span>Renewals</span></a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="page-login.php" class="icon-menu"><i class="icon-login"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php include_once('navigation.php') ;?>  
             
     <div id="left-sidebar" class="sidebar">
         <div class="sidebar-scroll">
             <div class="user-account">
-                <img src="assets/images/user.png" class="rounded-circle user-photo" alt="User Profile Picture">
+                <img src="<?= $_SESSION['S_User_Profile_Picture'];?>" class="rounded-circle user-photo" alt="User Profile Picture">
                 <div class="dropdown">
                     <span>Welcome,</span>
-                    <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong>Jessica Doe</strong></a>
+                    <a href="javascript:void(0);" class="dropdown-toggle user-name" data-toggle="dropdown"><strong><?= $_SESSION['S_User_Name']; ?></strong></a>
                     <ul class="dropdown-menu dropdown-menu-right account animated flipInY">
                         <li><a href="page-profile2.php"><i class="icon-user"></i>My Profile</a></li>
                         <li><a href="app-inbox.php"><i class="icon-envelope-open"></i>Messages</a></li>
@@ -160,21 +220,6 @@
                         <li class="divider"></li>
                         <li><a href="page-login.php"><i class="icon-power"></i>Logout</a></li>
                     </ul>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-4">
-                        <h6>5+</h6>
-                        <small>Experience</small>                        
-                    </div>
-                    <div class="col-4">
-                        <h6>400+</h6>
-                        <small>Employees</small>                        
-                    </div>
-                    <div class="col-4">                        
-                        <h6>80+</h6>
-                        <small>Clients</small>
-                    </div>
                 </div>
             </div>
             <!-- Nav tabs -->
@@ -193,17 +238,22 @@
                             <li><a href="index.php"><i class="icon-speedometer"></i><span>HR Dashboard</span></a></li>
                             <li><a href="app-holidays.php"><i class="icon-list"></i>Holidays</a></li>
                             <li><a href="app-events.php"><i class="icon-calendar"></i>Events</a></li>
-                            <li><a href="app-activities.php"><i class="icon-badge"></i>Activities</a></li>
-                            <li><a href="app-social.php"><i class="icon-globe"></i>HR Social</a></li>
                             <li class="active">
                                 <a href="#Employees" class="has-arrow"><i class="icon-users"></i><span>Employees</span></a>
                                 <ul>
-                                    <li><a href="emp-all.php">All Employees</a></li>
+                                <?php 
+                                    if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                                    echo '<li"><a href="emp-all.php">All Employees</a></li>'; 
+                                    } ?>
                                     <li class="active"><a href="emp-leave.php">Leave Requests</a></li>
-                                    <li><a href="emp-attendance.php">Attendance</a></li>
-                                    <li><a href="emp-departments.php">Departments</a></li>
+                                    <?php if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                                    echo '<li><a href="emp-attendance.php">Attendance</a></li>'; 
+                                    } ?>
                                 </ul>
                             </li>
+                            <?php 
+                            if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
+                            echo '    
                             <li>
                                 <a href="#Accounts" class="has-arrow"><i class="icon-briefcase"></i><span>Accounts</span></a>
                                 <ul>
@@ -225,21 +275,8 @@
                                     <li><a href="report-expense.php">Expense Report</a></li>
                                     <li><a href="report-invoice.php">Invoice Report</a></li>                                    
                                 </ul>
-                            </li>
-                            <li><a href="app-users.php"><i class="icon-user"></i>Users</a></li>
-                            <li>
-                                <a href="#Authentication" class="has-arrow"><i class="icon-lock"></i><span>Authentication</span></a>
-                                <ul>
-                                    <li><a href="page-login.php">Login</a></li>
-                                    <li><a href="page-register.php">Register</a></li>
-                                    <li><a href="page-lockscreen.php">Lockscreen</a></li>
-                                    <li><a href="page-forgot-password.php">Forgot Password</a></li>
-                                    <li><a href="page-404.php">Page 404</a></li>
-                                    <li><a href="page-403.php">Page 403</a></li>
-                                    <li><a href="page-500.php">Page 500</a></li>
-                                    <li><a href="page-503.php">Page 503</a></li>
-                                </ul>
-                            </li>
+                            </li>';
+                            }?>
                         </ul>
                     </nav>
                 </div>
@@ -479,39 +516,19 @@
                             <li class="breadcrumb-item active">Leave Request</li>
                         </ul>
                     </div>            
-                    <div class="col-lg-6 col-md-4 col-sm-12 text-right">
-                        <div class="bh_chart hidden-xs">
-                            <div class="float-left m-r-15">
-                                <small>Visitors</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-user"></i> 1,784</h6>
-                            </div>
-                            <span class="bh_visitors float-right">2,5,1,8,3,6,7,5</span>
-                        </div>
-                        <div class="bh_chart hidden-sm">
-                            <div class="float-left m-r-15">
-                                <small>Visits</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-globe"></i> 325</h6>
-                            </div>
-                            <span class="bh_visits float-right">10,8,9,3,5,8,5</span>
-                        </div>
-                        <div class="bh_chart hidden-sm">
-                            <div class="float-left m-r-15">
-                                <small>Chats</small>
-                                <h6 class="mb-0 mt-1"><i class="icon-bubbles"></i> 13</h6>
-                            </div>
-                            <span class="bh_chats float-right">1,8,5,6,2,4,3,2</span>
-                        </div>
-                    </div>
                 </div>
             </div>
-
+            
+            <?php
+            if ($_SESSION['S_User_Role'] == 1){ 
+            ?>
             <div class="row clearfix">
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="header">
-                            <h2>Employee List</h2>
+                            <h2>Leave requests list</h2>
                             <ul class="header-dropdown">
-                                <li><a href="javascript:void(0);" class="btn btn-info" data-toggle="modal" data-target="#Leave_Request">Add Leave</a></li>
+                                <li><a href="javascript:void(0);" class="btn btn-info" data-toggle="modal" data-target="#Add_Other_Request">Add Leave</a></li>
                             </ul>
                         </div>
                         <div class="body">
@@ -521,78 +538,73 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Name</th>
-                                            <th>Employee ID</th>
                                             <th>Leave Type</th>
                                             <th>Date</th>
                                             <th>Reason</th>
                                             <th>Action</th>
+                                            <th style="display:none;">UserID</th>
+                                            <th style="display:none;">Hash</th>
+                                            <th style="display:none;">Status</th>
+                                            <th style="display:none;">Type</th>
+                                            <th style="display:none;">Start</th>
+                                            <th style="display:none;">End</th>
+                                            <th style="display:none;">Reason</th>
+                                            <th style="display:none;">RequestID</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="width45">                                           
-                                                <img src="assets/images/xs/avatar1.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Marshall Nichols</h6>                                            
-                                            </td>
-                                            <td><span>LA-0215</span></td>
-                                            <td><span>Casual Leave</span></td>
-                                            <td>24 July, 2018 to 26 July, 2018</td>
-                                            <td>Going to Family Function</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-success" title="Approved"><i class="fa fa-check"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Declined" data-type="confirm"><i class="fa fa-ban"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">                                           
-                                                <img src="assets/images/xs/avatar2.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Maryam Amiri</h6>                                            
-                                            </td>
-                                            <td><span>LA-0215</span></td>
-                                            <td><span>Casual Leave</span></td>
-                                            <td>21 July, 2018 to 26 July, 2018</td>
-                                            <td>Attend Birthday party</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-success" title="Approved"><i class="fa fa-check"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Declined" data-type="confirm"><i class="fa fa-ban"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">                                           
-                                                <img src="assets/images/xs/avatar2.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Gary Camara</h6>                                            
-                                            </td>
-                                            <td><span>LA-0215</span></td>
-                                            <td><span>Medical Leave</span></td>
-                                            <td>20 July, 2018 to 26 July, 2018</td>
-                                            <td>Going to Development</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-success" title="Approved"><i class="fa fa-check"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Declined" data-type="confirm"><i class="fa fa-ban"></i></button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="width45">                                           
-                                                <img src="assets/images/xs/avatar2.jpg" class="rounded-circle avatar" alt="">
-                                            </td>
-                                            <td>
-                                                <h6 class="mb-0">Frank Camly</h6>                                            
-                                            </td>
-                                            <td><span>LA-0215</span></td>
-                                            <td><span>Casual Leave</span></td>
-                                            <td>11 Aug, 2018 to 21 Aug, 2018</td>
-                                            <td>Going to Holiday</td>
-                                            <td>
-                                                <button type="button" class="btn btn-sm btn-success" title="Approved"><i class="fa fa-check"></i></button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger js-sweetalert" title="Declined" data-type="confirm"><i class="fa fa-ban"></i></button>
-                                            </td>
-                                        </tr>
+                                        <?php
+                                        include('db.php');
+                                        $sql = "SELECT * FROM `users_leave_requests`
+                                        INNER JOIN `users_leave_type` ON users_leave_requests.Leave_TypeID = users_leave_type.Leave_TypeID
+                                        INNER JOIN `users_leave_status` ON users_leave_requests.Leave_Status = users_leave_status.Leave_StatusID
+                                        INNER JOIN `users_user`ON users_leave_requests.Leave_UserID = users_user.User_UserID WHERE `Leave_Delete` = '1' AND `Leave_EndDate` >= CURDATE()";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                          while($row = $result->fetch_assoc()) {
+                                            $V_StartDate = date("j F Y", strtotime($row['Leave_StartDate']));
+                                            $V_EndDate = date("j F Y", strtotime($row['Leave_EndDate']));
+                                            echo '<tr>
+                                                <td class="width45">                                           
+                                                    <img src="'.$row['User_Profile_Picture'].'" class="rounded-circle avatar" alt="">
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">'.$row['User_FirstName'].' '.$row['User_LastName'].'</h6>                                            
+                                                </td>
+                                                <td><span>'.$row['Leave_Type_Name'].'</span></td>
+                                                <td>'.$V_StartDate.' to '. $V_EndDate .'</td>
+                                                <td>'.$row['Leave_Reason'].'</td>';
+                                                if($row['Leave_Status'] == 1)
+                                                {
+                                                echo '<td>
+                                                    <button type="button" class="btn btn-sm btn-success approve_btn" title="Approved"><i class="fa fa-check"></i></button>
+                                                    <button type="button" class="btn btn-sm btn-danger decline_btn" title="Declined"><i class="fa fa-ban"></i></button>
+                                                </td>';
+                                                }
+                                                else if($row['Leave_Status'] == 2){
+                                                    echo '<td><button type="button" class="btn btn-sm btn-warning edit_btn" title="Edit"><i class="fa fa-check"></i></button></td>';
+                                                }
+                                                else if($row['Leave_Status'] == 3){
+                                                    echo '<td><button type="button" class="btn btn-sm btn-warning edit_btn" title="Edit"><i class="fa fa-ban"></i></button></td>';
+                                                    } 
+                                                else if($row['Leave_Status'] == 4){
+                                                    echo '<td><button type="button" class="btn btn-sm btn-warning edit_btn" title="Edit"><i class="icon-question"></i></button></td>';
+                                                }
+                                                echo '<td style="display:none;">'.$row["User_UserID"].'</td>
+                                                <td style="display:none;">'.$row["User_Hash"].'</td>
+                                                <td style="display:none;">'.$row["Leave_Status"].'</td>
+                                                <td style="display:none;">'.$row["Leave_TypeID"].'</td>
+                                                <td style="display:none;">'.$row["Leave_StartDate"].'</td>
+                                                <td style="display:none;">'.$row["Leave_EndDate"].'</td>
+                                                <td style="display:none;">'.$row["Leave_Reason"].'</td>
+                                                <td style="display:none;">'.$row["Leave_RequestID"].'</td>
+                                            </tr>';
+                                        
+                                          }
+                                        }
+                                        $conn->close();
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -600,63 +612,706 @@
                     </div>
                 </div>
             </div>
+            <?php
+        }
+        ?>
+
+            <div class="row clearfix">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>Your leave request</h2>
+                            <ul class="header-dropdown">
+                                <li><a href="javascript:void(0);" class="btn btn-info" data-toggle="modal" data-target="#Add_Own_Request">Add Leave</a></li>
+                            </ul>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table class="table table-hover js-basic-example dataTable table-custom m-b-0 c_list">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Leave Type</th>
+                                            <th>Date</th>
+                                            <th>Reason</th>
+                                            <th>Action</th>
+                                            <th style="display:none;">UserID</th>
+                                            <th style="display:none;">Hash</th>
+                                            <th style="display:none;">Status</th>
+                                            <th style="display:none;">Type</th>
+                                            <th style="display:none;">Start</th>
+                                            <th style="display:none;">End</th>
+                                            <th style="display:none;">Reason</th>
+                                            <th style="display:none;">RequestID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        include('db.php');
+                                        $sql = "SELECT * FROM `users_leave_requests`
+                                        INNER JOIN `users_leave_type` ON users_leave_requests.Leave_TypeID = users_leave_type.Leave_TypeID
+                                        INNER JOIN `users_leave_status` ON users_leave_requests.Leave_Status = users_leave_status.Leave_StatusID
+                                        INNER JOIN `users_user`ON users_leave_requests.Leave_UserID = users_user.User_UserID
+                                        WHERE `Leave_UserID` = '$AC_UserID' AND `Leave_Delete` = '1' AND `Leave_EndDate` >= CURDATE()";
+                                        $result = $conn->query($sql);
+                                        
+                                        if ($result->num_rows > 0) {
+                                          while($row = $result->fetch_assoc()) {
+                                            $V_StartDate = date("j F Y", strtotime($row['Leave_StartDate']));
+                                            $V_EndDate = date("j F Y", strtotime($row['Leave_EndDate']));
+                                            echo '<tr>
+                                                <td class="width45">                                           
+                                                    <img src="'.$row['User_Profile_Picture'].'" class="rounded-circle avatar" alt="">
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0">'.$row['User_FirstName'].' '.$row['User_LastName'].'</h6>                                            
+                                                </td>
+                                                <td><span>'.$row['Leave_Type_Name'].'</span></td>
+                                                <td>'.$V_StartDate.' to '. $V_EndDate .'</td>
+                                                <td>'.$row['Leave_Reason'].'</td>';
+                                                if($row['Leave_Status'] == 1)
+                                                {
+                                                echo '<td>
+                                                    <button type="button" class="btn btn-sm btn-success edit_own_btn" title="Approved"><i class="icon-clock"></i></button>
+                                                </td>';
+                                                }
+                                                else if($row['Leave_Status'] == 2){
+                                                    echo '<td><i class="fa fa-check fa-2x"></i></td>';
+                                                }
+                                                else if($row['Leave_Status'] == 3){
+                                                    echo '<td><i class="fa fa-ban fa-2x"></i></td>';
+                                                    } 
+                                                else if($row['Leave_Status'] == 4){
+                                                    echo '<td><i class="icon-question fa-2x"></i></td>';
+                                                }
+                                                echo '<td style="display:none;">'.$row["User_UserID"].'</td>
+                                                <td style="display:none;">'.$row["User_Hash"].'</td>
+                                                <td style="display:none;">'.$row["Leave_Status"].'</td>
+                                                <td style="display:none;">'.$row["Leave_TypeID"].'</td>
+                                                <td style="display:none;">'.$row["Leave_StartDate"].'</td>
+                                                <td style="display:none;">'.$row["Leave_EndDate"].'</td>
+                                                <td style="display:none;">'.$row["Leave_Reason"].'</td>
+                                                <td style="display:none;">'.$row["Leave_RequestID"].'</td>
+                                            </tr>';
+                                        
+                                          }
+                                        }
+                                        $conn->close();
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>                            
+
         </div>
     </div>
     
 </div>
 
 <!-- Default Size -->
-<div class="modal animated lightSpeedIn" id="Leave_Request" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6 class="title" id="defaultModalLabel">Add Leave Request</h6>
-            </div>
-            <div class="modal-body">
-                <div class="row clearfix">
-                    <div class="col-md-12">
-                        <select class="form-control mb-3 show-tick">
-                            <option>Select Leave Type</option>
-                            <option>Casual Leave (12)</option>
-                            <option>Medical Leave</option>
-                            <option>Maternity Leave</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" data-provide="datepicker" data-date-autoclose="true" class="form-control" placeholder="From *">
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <input type="text" data-provide="datepicker" data-date-autoclose="true" class="form-control" placeholder="From *">
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <textarea rows="6" class="form-control no-resize" placeholder="Leave Reason *"></textarea>
-                        </div>
-                    </div>                    
+<form method="POST">
+    <div class="modal animated lightSpeedIn" id="Add_Own_Request" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Add Leave Request</h6>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Add</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label>Type</label>
+                            <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-cup"></i></span>
+                            </div>
+                            <select name="AOM-Type" id="AOM-Type" class="form-control">
+                                <?php
+                                    include("db.php");
+                                    $sql = "SELECT * FROM `users_leave_type`";
+                                    $result = $conn->query($sql);
+                                        
+                                    if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Leave_TypeID"].'">'.$row["Leave_Type_Name"].'</option>';
+                                        }
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    $conn->close();
+                                ?>
+                            </select>
+                            </div>
+                    </div>
+                            <div class="col-md-6">
+                        <label>From</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="AOM-StartDate" id="AOM-StartDate" placeholder="From *">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>To</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="AOM-EndDate" id="AOM-EndDate" placeholder="To *">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                        <label>Reason</label>
+                            <div class="form-group">
+                                <textarea rows="6" class="form-control no-resize" name="AOM-Reason" id="AOM-Reason" placeholder="Leave Reason *"></textarea>
+                            </div>
+                        </div>                   
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Add_Own" class="btn btn-primary">ADD</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
+
+<!-- Default Size -->
+<form method="POST">
+    <div class="modal animated lightSpeedIn" id="Add_Other_Request" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Add Leave Request</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                        <div class="col-md-12">
+                            <label>Name</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-user"></i></span>
+                                </div>
+                                <select class="form-control show-tick ms select2" name="AO-Name" id="AO-Name" data-placeholder="Select">
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM `users_user` WHERE `User_Active` =  '1'";
+                                        $result = $conn->query($sql);
+                                            
+                                        if ($result->num_rows > 0) {
+                                            while($row = $result->fetch_assoc()) {
+                                                echo '<option value="'.$row["User_UserID"].'">'.$row["User_FirstName"].' '. $row["User_LastName"] .'</option>';
+                                            }
+                                        } else {
+                                            echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>                    
+                        </div>  
+                        <div class="col-md-12">
+                            <label>Type</label>
+                            <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-cup"></i></span>
+                            </div>
+                            <select name="AO-Type" id="AO-Type" class="form-control">
+                                <?php
+                                    include("db.php");
+                                    $sql = "SELECT * FROM `users_leave_type`";
+                                    $result = $conn->query($sql);
+                                        
+                                    if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Leave_TypeID"].'">'.$row["Leave_Type_Name"].'</option>';
+                                        }
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    $conn->close();
+                                ?>
+                            </select>
+                            </div>
+                    </div>
+                            <div class="col-md-6">
+                        <label>From</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="AO-StartDate" id="AO-StartDate" placeholder="From *">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>To</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="AO-EndDate" id="AO-EndDate" placeholder="To *">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label>Reason</label>
+                            <div class="form-group">
+                                <textarea rows="6" class="form-control no-resize" name="AO-Reason" id="AO-Reason" placeholder="Leave Reason *"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label>Status</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-feed"></i></span>
+                                </div>
+                                <select name="AO-Status" id="AO-Status" class="form-control">
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM `users_leave_status`";
+                                        $result = $conn->query($sql);
+                                            
+                                        if ($result->num_rows > 0) {
+                                            while($row = $result->fetch_assoc()) {
+                                                echo '<option value="'.$row["Leave_StatusID"].'">'.$row["Leave_Status_Name"].'</option>';
+                                            }
+                                        } else {
+                                            echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>                    
+                        </div>                   
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Add_Other" class="btn btn-primary">ADD</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Edit Own leave request -->
+<form method="POST">
+    <div class="modal animated lightSpeedIn" id="edit_own_contact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Edit Your Leave Request</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                            <input type="hidden" name="EOM-ID" id="EOM-ID">
+                            <input type="hidden" name="EOM-HASH" id="EOM-HASH">
+                            <input type="hidden" name="EOM-RequestID" id="EOM-RequestID">
+                        <div class="col-md-12">
+                            <label>Type</label>
+                            <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-cup"></i></span>
+                            </div>
+                            <select name="EOM-Type" id="EOM-Type" class="form-control">
+                                <?php
+                                    include("db.php");
+                                    $sql = "SELECT * FROM `users_leave_type`";
+                                    $result = $conn->query($sql);
+                                        
+                                    if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Leave_TypeID"].'">'.$row["Leave_Type_Name"].'</option>';
+                                        }
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    $conn->close();
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                        <div class="col-md-6">
+                        <label>From</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="EOM-StartDate" id="EOM-StartDate" placeholder="From *">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>To</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="EOM-EndDate" id="EOM-EndDate" placeholder="To *">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                        <label>Reason</label>
+                            <div class="form-group">
+                                <textarea rows="6" class="form-control no-resize" name="EOM-Reason" id="EOM-Reason" placeholder="Leave Reason *"></textarea>
+                            </div>
+                        </div>                    
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Edit_Own" class="btn btn-warning">EDIT</button>
+                    <button type="submitchr" name="Button_Delete_Own" class="btn btn-danger">DELETE</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Approve Modal -->
+<form method="POST">
+    <div class="modal animated lightSpeedIn" id="approve_contact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Approve the request.</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                            <input type="hidden" name="AP-ID" id="AP-ID">
+                            <input type="hidden" name="AP-HASH" id="AP-HASH">
+                            <input type="hidden" name="AP-RequestID" id="AP-RequestID">
+                        <div class="col-md-12">
+                            <label>Type</label>
+                            <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-cup"></i></span>
+                            </div>
+                            <select name="AP-Type" id="AP-Type" class="form-control" disabled>
+                                <?php
+                                    include("db.php");
+                                    $sql = "SELECT * FROM `users_leave_type`";
+                                    $result = $conn->query($sql);
+                                        
+                                    if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Leave_TypeID"].'">'.$row["Leave_Type_Name"].'</option>';
+                                        }
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    $conn->close();
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                        <div class="col-md-6">
+                        <label>From</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="AP-StartDate" id="AP-StartDate" placeholder="From *" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>To</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="AP-EndDate" id="AP-EndDate" placeholder="To *" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                        <label>Reason</label>
+                            <div class="form-group">
+                                <textarea rows="6" class="form-control no-resize" name="AP-Reason" id="AP-Reason" placeholder="Leave Reason *" disabled></textarea>
+                            </div>
+                        </div>                    
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Approve" class="btn btn-success">APPROVE</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Decline Modal -->
+<form method="POST">
+    <div class="modal animated lightSpeedIn" id="decline_contact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Decline the request.</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                            <input type="hidden" name="DP-ID" id="DP-ID">
+                            <input type="hidden" name="DP-HASH" id="DP-HASH">
+                            <input type="hidden" name="DP-RequestID" id="DP-RequestID">
+                        <div class="col-md-12">
+                            <label>Type</label>
+                            <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-cup"></i></span>
+                            </div>
+                            <select name="DP-Type" id="DP-Type" class="form-control" disabled>
+                                <?php
+                                    include("db.php");
+                                    $sql = "SELECT * FROM `users_leave_type`";
+                                    $result = $conn->query($sql);
+                                        
+                                    if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Leave_TypeID"].'">'.$row["Leave_Type_Name"].'</option>';
+                                        }
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    $conn->close();
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                        <div class="col-md-6">
+                        <label>From</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="DP-StartDate" id="DP-StartDate" placeholder="From *" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>To</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="DP-EndDate" id="DP-EndDate" placeholder="To *" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                        <label>Reason</label>
+                            <div class="form-group">
+                                <textarea rows="6" class="form-control no-resize" name="DP-Reason" id="DP-Reason" placeholder="Leave Reason *" disabled></textarea>
+                            </div>
+                        </div>                    
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Decline" class="btn btn-danger">DECLINE</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Edit Modal -->
+<form method="POST">
+    <div class="modal animated lightSpeedIn" id="edit_contact" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="title" id="defaultModalLabel">Edit the request.</h6>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                            <input type="hidden" name="EP-ID" id="EP-ID">
+                            <input type="hidden" name="EP-HASH" id="EP-HASH">
+                            <input type="hidden" name="EP-RequestID" id="EP-RequestID">
+                        <div class="col-md-12">
+                            <label>Type</label>
+                            <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="icon-cup"></i></span>
+                            </div>
+                            <select name="EP-Type" id="EP-Type" class="form-control" disabled>
+                                <?php
+                                    include("db.php");
+                                    $sql = "SELECT * FROM `users_leave_type`";
+                                    $result = $conn->query($sql);
+                                        
+                                    if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo '<option value="'.$row["Leave_TypeID"].'">'.$row["Leave_Type_Name"].'</option>';
+                                        }
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    $conn->close();
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                        <div class="col-md-6">
+                        <label>From</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="EP-StartDate" id="EP-StartDate" placeholder="From *" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                        <label>To</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-calendar"></i></span>
+                                </div>
+                                <input type="date" class="form-control" name="EP-EndDate" id="EP-EndDate" placeholder="To *" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label>Reason</label>
+                            <div class="form-group">
+                                <textarea rows="6" class="form-control no-resize" name="EP-Reason" id="EP-Reason" placeholder="Leave Reason *" disabled></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label>Status</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="icon-feed"></i></span>
+                                </div>
+                                <select name="EP-Status" id="EP-Status" class="form-control">
+                                    <?php
+                                        include("db.php");
+                                        $sql = "SELECT * FROM `users_leave_status`";
+                                        $result = $conn->query($sql);
+                                            
+                                        if ($result->num_rows > 0) {
+                                            while($row = $result->fetch_assoc()) {
+                                                echo '<option value="'.$row["Leave_StatusID"].'">'.$row["Leave_Status_Name"].'</option>';
+                                            }
+                                        } else {
+                                            echo "0 results";
+                                        }
+                                        $conn->close();
+                                    ?>
+                                </select>
+                            </div>                    
+                        </div>
+                    </div>
+                <div class="modal-footer">
+                    <button type="submit" name="Button_Edit" class="btn btn-warning">EDIT</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
 
 <!-- Javascript -->
 <script src="assets/bundles/libscripts.bundle.js"></script>    
 <script src="assets/bundles/vendorscripts.bundle.js"></script>
 
 <script src="assets/bundles/datatablescripts.bundle.js"></script>
+<script src="assets/vendor/multi-select/js/jquery.multi-select.js"></script>
 <script src="assets/vendor/sweetalert/sweetalert.min.js"></script> <!-- SweetAlert Plugin Js --> 
 <script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script><!-- bootstrap datepicker Plugin Js --> 
 
 <script src="assets/bundles/mainscripts.bundle.js"></script>
 <script src="assets/js/pages/tables/jquery-datatable.js"></script>
 <script src="assets/js/pages/ui/dialogs.js"></script>
+
+
+<script src="assets/vendor/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script> <!-- Bootstrap Colorpicker Js --> 
+<script src="assets/vendor/jquery-inputmask/jquery.inputmask.bundle.js"></script> <!-- Input Mask Plugin Js --> 
+<script src="assets/vendor/jquery.maskedinput/jquery.maskedinput.min.js"></script>
+<script src="assets/vendor/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+<script src="assets/vendor/bootstrap-tagsinput/bootstrap-tagsinput.js"></script> <!-- Bootstrap Tags Input Plugin Js --> 
+<script src="assets/vendor/nouislider/nouislider.js"></script> <!-- noUISlider Plugin Js --> 
+<script src="assets/vendor/select2/select2.min.js"></script> <!-- Select2 Js -->
+<script src="assets/js/pages/forms/advanced-form-elements.js"></script>
+
+<script>
+  $(document).ready(function () {
+		$('.edit_own_btn').on('click', function() {
+			$('#edit_own_contact').modal('show');
+			$tr = $(this).closest('tr');
+			var data = $tr.children("td").map(function() {
+				return $(this).text();
+			}).get();
+			
+			console.log(data);
+            $('#EOM-ID').val(data[6]);
+            $('#EOM-HASH').val(data[7]);
+            $('#EOM-Status').val(data[8]);
+            $('#EOM-Type').val(data[9]);
+            $('#EOM-StartDate').val(data[10]);
+            $('#EOM-EndDate').val(data[11]);
+            $('#EOM-Reason').val(data[12]);
+            $('#EOM-RequestID').val(data[13]);
+		});
+  });
+  </script>
+  <script>
+  $(document).ready(function () {
+		$('.approve_btn').on('click', function() {
+			$('#approve_contact').modal('show');
+			$tr = $(this).closest('tr');
+			var data = $tr.children("td").map(function() {
+				return $(this).text();
+			}).get();
+			
+			console.log(data);
+            $('#AP-ID').val(data[6]);
+            $('#AP-HASH').val(data[7]);
+            $('#AP-Status').val(data[8]);
+            $('#AP-Type').val(data[9]);
+            $('#AP-StartDate').val(data[10]);
+            $('#AP-EndDate').val(data[11]);
+            $('#AP-Reason').val(data[12]);
+            $('#AP-RequestID').val(data[13]);
+		});
+  });
+  $(document).ready(function () {
+		$('.decline_btn').on('click', function() {
+			$('#decline_contact').modal('show');
+			$tr = $(this).closest('tr');
+			var data = $tr.children("td").map(function() {
+				return $(this).text();
+			}).get();
+			
+			console.log(data);
+            $('#DP-ID').val(data[6]);
+            $('#DP-HASH').val(data[7]);
+            $('#DP-Status').val(data[8]);
+            $('#DP-Type').val(data[9]);
+            $('#DP-StartDate').val(data[10]);
+            $('#DP-EndDate').val(data[11]);
+            $('#DP-Reason').val(data[12]);
+            $('#DP-RequestID').val(data[13]);
+		});
+  });
+  $(document).ready(function () {
+		$('.edit_btn').on('click', function() {
+			$('#edit_contact').modal('show');
+			$tr = $(this).closest('tr');
+			var data = $tr.children("td").map(function() {
+				return $(this).text();
+			}).get();
+			
+			console.log(data);
+            $('#EP-ID').val(data[6]);
+            $('#EP-HASH').val(data[7]);
+            $('#EP-Status').val(data[8]);
+            $('#EP-Type').val(data[9]);
+            $('#EP-StartDate').val(data[10]);
+            $('#EP-EndDate').val(data[11]);
+            $('#EP-Reason').val(data[12]);
+            $('#EP-RequestID').val(data[13]);
+		});
+  });
+  </script>
 </body>
 </html>

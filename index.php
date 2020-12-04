@@ -1,6 +1,5 @@
 <?php
 include('account-check.php');
-
 ?>
 <!doctype html>
 <html lang="en">
