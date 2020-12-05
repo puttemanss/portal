@@ -159,6 +159,7 @@ employee_edit_permission();
                             <li class="active">
                                 <a href="#Employees" class="has-arrow"><i class="icon-users"></i><span>Employees</span></a>
                                 <ul>
+                                    <li><a href="page-profile2.php">My Profile</a></li>
                                 <?php 
                                     if(($_SESSION['S_User_Role'] == 1) || ($_SESSION['S_User_Role'] == 2) || ($_SESSION['S_User_Role'] == 3)){
                                     echo '<li class="active"><a href="emp-all.php">All Employees</a></li>'; 
